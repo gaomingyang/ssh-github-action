@@ -1,0 +1,63 @@
+name: "SSH GITHUB Action"
+description: "Set up ssh in the github workflow"
+author: "gaomingyangcn@gmail.com"
+
+inputs:
+  SERVER_NAME:
+    description: "server name"
+    required: false
+    default: server
+  SSH_USER:
+    description: "ssh user"
+    required: true
+  SSH_HOST:
+    description: "ssh host"
+    required: true
+  SSH_PORT:
+    description: "ssh port"
+    required: false
+    default: "22"
+  # SSH_PASSWORD:
+  #   description: "ssh password,稍后，目前都用key"
+  #   required: false
+  SSH_KEY:
+    description: "ssh key string"
+    required: true
+
+outputs:
+  SERVER:
+    description: "server name"
+    value: ${{ steps.setup-ssh.outputs.name }}
+
+runs:
+  using: "composite"
+  steps:
+    - id: setup-ssh
+      name: Setup Server Name
+      run: |
+        NAME=$(echo "${{ inputs.SERVER_NAME }}" | iconv -t ascii//TRANSLIT | sed -E 's/[^a-zA-Z0-9]+/-/g' | sed -E 's/^-+|-+$//g' | tr A-Z a-z)
+        echo "name=$SERVER_NAME" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - name: Create SSH Key File
+      run: |
+        mkdir -p ~/.ssh/
+        KEYFILE=~/.ssh/${{ steps.setup-ssh.outputs.name }}.key
+        echo "${{ inputs.SSH_KEY }}" > $KEYFILE
+        sudo chmod 600 $KEYFILE
+      shell: bash
+
+    - name: Gather SSH public keys from servers
+      run: ssh-keyscan -H ${{ inputs.SSH_HOST }} >> ~/.ssh/known_hosts
+      shell: bash
+
+    - name: Create the SSH Config File
+      run: |
+        cat >>~/.ssh/config <<END
+        Host ${{ steps.setup-ssh.outputs.name }}
+          HostName ${{ inputs.SSH_HOST }}
+          Port ${{ inputs.SSH_PORT }}
+          User ${{ inputs.SSH_USER }}
+          IdentityFile ~/.ssh/${{ steps.setup-ssh.outputs.name }}.key
+        END
+      shell: bash

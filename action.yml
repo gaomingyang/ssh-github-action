@@ -1,10 +1,10 @@
-name: "SSH GITHUB Action"
+name: "SSH Github Action"
 description: "Set up ssh in the github workflow"
 author: "gaomingyangcn@gmail.com"
 
 inputs:
   SERVER_NAME:
-    description: "server name"
+    description: "server alias name"
     required: false
     default: server
   SSH_USER:

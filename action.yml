@@ -35,7 +35,7 @@ runs:
     - id: setup-ssh
       name: Setup Server Name
       run: |
-        NAME=$(echo "${{ inputs.SERVER_NAME }}" | iconv -t ascii//TRANSLIT | sed -E 's/[^a-zA-Z0-9]+/-/g' | sed -E 's/^-+|-+$//g' | tr A-Z a-z)
+        SERVER_NAME=$(echo "${{ inputs.SERVER_NAME }}" | iconv -t ascii//TRANSLIT | sed -E 's/[^a-zA-Z0-9]+/-/g' | sed -E 's/^-+|-+$//g' | tr A-Z a-z)
         echo "name=$SERVER_NAME" >> $GITHUB_OUTPUT
       shell: bash
 

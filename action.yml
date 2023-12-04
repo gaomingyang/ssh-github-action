@@ -6,7 +6,7 @@ inputs:
   SERVER_NAME:
     description: "server alias name"
     required: false
-    default: server
+    default: "server"
   SSH_USER:
     description: "ssh user"
     required: true
@@ -25,7 +25,7 @@ inputs:
     required: true
 
 outputs:
-  SERVER:
+  SERVER_NAME:
     description: "server name"
     value: ${{ steps.setup-ssh.outputs.name }}
 
